@@ -20,4 +20,10 @@ class PatternAdmin(admin.ModelAdmin):
 
 @admin.register(FlaggedMessage)
 class FlaggedMessageAdmin(admin.ModelAdmin):
-    list_display = ("content", "matched_pattern", "created_at", "updated_at")
+    list_display = (
+        "content",
+        "matched_pattern",
+        "client_msg_id",
+        "created_at",
+        "updated_at",
+    )

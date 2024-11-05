@@ -22,6 +22,7 @@ class Pattern(BaseModel):
 
 
 class FlaggedMessage(BaseModel):
+    client_msg_id = models.CharField(max_length=255, unique=True, default=None)
     content = models.TextField()
     matched_pattern = models.ForeignKey(Pattern, on_delete=models.CASCADE)
 
