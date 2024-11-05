@@ -6,7 +6,7 @@ from .models import Pattern, FlaggedMessage
 
 
 @api_view(["POST"])
-def event_handler(request):
+async def event_handler(request):
     data = request.data
     data_type = data.get("event_type")
     if not data_type:
