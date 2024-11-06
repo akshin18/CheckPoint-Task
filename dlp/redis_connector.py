@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from redis import Redis
@@ -16,7 +17,12 @@ class RedisConnector:
             self.remove_item_from_zset(key, items[0])
             return items[0]
         return None
-
+    
+    def add_item_to_zset(self, key, value):
+        # Add the item to the sorted set
+        now = time.time()
+        self.redis.zadd(key, {value: now})
+    
     def remove_item_from_zset(self, key, value):
         # Remove the item from the sorted set
         self.redis.zrem(key, value)
