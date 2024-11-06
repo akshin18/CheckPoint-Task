@@ -6,6 +6,9 @@ while ! nc -z $DATABASE_HOST $DATABASE_PORT; do
   sleep 2
 done
 
+# Collect static files
+python manage.py collectstatic --noinput
+
 # Run migrations
 python manage.py makemigrations
 python manage.py migrate
