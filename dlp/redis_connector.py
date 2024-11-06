@@ -18,11 +18,11 @@ class RedisConnector:
             return items[0]
         return None
 
-    def add_item_to_zset(self, key, value):
+    def add_item_to_zset(self, key, value) -> None:
         # Add the item to the sorted set
         now = time.time()
         self.redis.zadd(key, {value: now})
 
-    def remove_item_from_zset(self, key, value):
+    def remove_item_from_zset(self, key, value) -> None:
         # Remove the item from the sorted set
         self.redis.zrem(key, value)

@@ -16,7 +16,7 @@ logger.add(sys.stderr, level="INFO")
 
 
 class Manager:
-    def __init__(self, queue_name: str):
+    def __init__(self, queue_name: str) -> None:
         self.loop = asyncio.get_event_loop()
         self.queue = queue_name
         self.redis_connector = RedisConnector()
@@ -88,7 +88,7 @@ class Manager:
             self.loop.create_task(self.task(message))
             await asyncio.sleep(1)
 
-    async def task(self, message):
+    async def task(self, message) -> None:
         message_text = message["event"]["text"]
         client_msg_id = message["event"]["client_msg_id"]
         for pattern in self.patterns:
