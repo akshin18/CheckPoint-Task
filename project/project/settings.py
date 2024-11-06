@@ -121,13 +121,3 @@ if 'pytest' in sys.modules:
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
     }
-else:
-    # Your regular database configuration (e.g., MySQL or PostgreSQL)
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
