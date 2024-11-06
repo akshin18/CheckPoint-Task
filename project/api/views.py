@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from django.http import JsonResponse
 
 from api import handler
 
@@ -66,7 +67,13 @@ def get_patterns(request) -> Response:
 
 
 @api_view(["POST"])
-def update_leaked_message(request) -> Response:
+def update_message(request) -> Response:
     # Extract the incoming data
     data = request.data
-    return handler.update_leaked_message(data)
+    client_msg_id = data.get("client_msg_id")
+    pattern_id = data.get("pattern_id")
+    return handler.update_message(client_msg_id, pattern_id)
+
+
+def ping(request) -> JsonResponse:
+    return JsonResponse({"status": "ok"})
