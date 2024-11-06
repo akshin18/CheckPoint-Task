@@ -22,6 +22,7 @@ class PatternAdmin(admin.ModelAdmin):
 class FlaggedMessageAdmin(admin.ModelAdmin):
     list_display = (
         "content",
+        "is_checked",
         "matched_pattern",
         "client_msg_id",
         "created_at",
