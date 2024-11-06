@@ -1,0 +1,63 @@
+services:
+  db:
+    image: mysql:latest
+    env_file:
+      - prod.env
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  web:
+    build: ./project
+    env_file:
+      - prod.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - mynetwork
+    entrypoint: [ "./entrypoint.sh" ]
+    command: gunicorn --bind 0.0.0.0:8000 project.wsgi:application
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/ping/" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  task:
+    build: ./dlp
+    env_file:
+      - prod.env
+    depends_on:
+      web:
+        condition: service_healthy
+    command: python main.py
+    networks:
+      - mynetwork
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 80:80
+    depends_on:
+      - web
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  static_volume:
