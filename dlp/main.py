@@ -11,8 +11,8 @@ from loguru import logger
 from settings import QUEUE_NAME, PATTERNS_URL, UPDATE_MESSAGE_URL
 from redis_connector import RedisConnector
 
-logger.remove() 
-logger.add(sys.stderr, level="INFO") 
+logger.remove()
+logger.add(sys.stderr, level="INFO")
 
 
 class Manager:
@@ -33,9 +33,11 @@ class Manager:
         if item:
             logger.debug(f"Message: {item}")
             return json.loads(item)
-    
+
     @staticmethod
-    async def update_message(client_msg_id: str, pattern_id: Optional[str]) -> Optional[bool]:
+    async def update_message(
+        client_msg_id: str, pattern_id: Optional[str]
+    ) -> Optional[bool]:
         logger.info(f"Updating message {client_msg_id=} {pattern_id=}")
         async with httpx.AsyncClient() as client:
             try:
@@ -55,7 +57,9 @@ class Manager:
                 logger.debug(f"{PATTERNS_URL=}")
                 response = await client.get(PATTERNS_URL)
                 if response.status_code != 200:
-                    logger.error(f"Could not get patterns: {response.status_code=} {response.text=}")
+                    logger.error(
+                        f"Could not get patterns: {response.status_code=} {response.text=}"
+                    )
                     time.sleep(100000)
                     return []
                 patterns_list = response.json()
@@ -68,7 +72,7 @@ class Manager:
             except Exception as e:
                 logger.exception(f"Error: {e}")
                 return []
-            
+
     async def main(self) -> None:
         """Main loop to read messages from SQS queue and execute tasks"""
         if not self.patterns:
@@ -83,7 +87,7 @@ class Manager:
                 continue
             self.loop.create_task(self.task(message))
             await asyncio.sleep(1)
-            
+
     async def task(self, message):
         message_text = message["event"]["text"]
         client_msg_id = message["event"]["client_msg_id"]
@@ -94,15 +98,17 @@ class Manager:
                 pattern_id = pattern.get("id")
                 if not await self.update_message(client_msg_id, pattern_id):
                     logger.error("Could not update message")
-                    self.redis_connector.add_item_to_zset(self.queue, json.dumps(message, separators=(",", ":")))
+                    self.redis_connector.add_item_to_zset(
+                        self.queue, json.dumps(message, separators=(",", ":"))
+                    )
                 break
         else:
             logger.info("No pattern matched")
             if not await self.update_message(client_msg_id, None):
                 logger.error("Could not update message")
-                self.redis_connector.add_item_to_zset(self.queue, json.dumps(message, separators=(",", ":")))
-            
-                
+                self.redis_connector.add_item_to_zset(
+                    self.queue, json.dumps(message, separators=(",", ":"))
+                )
 
 
 if __name__ == "__main__":
