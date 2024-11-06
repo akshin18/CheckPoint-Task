@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -113,3 +114,20 @@ QUEUE_NAME = os.environ.get("QUEUE_NAME", "default")
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
 REDIS_DB = os.environ.get("REDIS_DB", 0)
+
+
+if 'pytest' in sys.modules:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+else:
+    # Your regular database configuration (e.g., MySQL or PostgreSQL)
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mydb',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
