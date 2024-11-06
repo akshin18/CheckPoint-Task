@@ -5,7 +5,9 @@ ENV PYTHONUNBUFFERED 1         # Ensures stdout and stderr are sent to Docker lo
 
 WORKDIR /task
 
-RUN apt-get update && apt-get install -y
+RUN apt-get update && apt-get install -y \
+    curl \
+    && apt-get clean
 
 COPY ./requirements.txt ./
 

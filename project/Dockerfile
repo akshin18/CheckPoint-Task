@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     default-libmysqlclient-dev \
     netcat-openbsd \
+    curl \
     && apt-get clean
 
 RUN pip install --upgrade pip && pip install poetry
