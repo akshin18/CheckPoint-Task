@@ -13,6 +13,8 @@ gunicorn = "^23.0.0"
 mysqlclient = "^2.2.5"
 whitenoise = "^6.8.2"
 redis = "^5.2.0"
+pytest = "^8.3.3"
+pytest-django = "^4.9.0"
 
 
 [tool.poetry.group.dev.dependencies]
