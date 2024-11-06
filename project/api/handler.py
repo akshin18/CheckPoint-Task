@@ -1,5 +1,6 @@
 import json
 import time
+from typing import Optional
 
 from rest_framework.response import Response
 from redis import Redis
@@ -39,9 +40,11 @@ def save_message(text: str, client_msg_id: str) -> bool:
     return False
 
 
-def update_leaked_message(client_msg_id: str, pattern_id: str) -> Response:
+def update_message(client_msg_id: str, pattern_id: Optional[str]) -> Response:
     # Upload the leaked message to the API
     message = FlaggedMessage.objects.get(client_msg_id=client_msg_id)
-    message.matched_pattern = Pattern.objects.get(id=pattern_id)
+    message.is_checked = True
+    if pattern_id:
+        message.matched_pattern = Pattern.objects.get(id=pattern_id)
     message.save()
     return Response({"detail": "Message updated."}, status=200)
