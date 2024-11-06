@@ -5,7 +5,7 @@ from typing import Optional, Dict, List
 
 import httpx
 
-from dlp.settings import QUEUE_NAME, PATTERNS_URL, UPDATE_LEAKED_MESSAGE_URL
+from settings import QUEUE_NAME, PATTERNS_URL, UPDATE_LEAKED_MESSAGE_URL
 from redis_connector import RedisConnector
 
 
