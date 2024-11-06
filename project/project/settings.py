@@ -108,7 +108,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = ["http://0.0.0.0:1337"]
+CSRF_TRUSTED_ORIGINS = ["http://nginx", "http://localhost", "http://task"]
 QUEUE_NAME = os.environ.get("QUEUE_NAME", "default")
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
