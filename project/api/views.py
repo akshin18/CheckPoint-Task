@@ -1,12 +1,12 @@
-import re
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .handler import dlp
+
+from api import handler
 
 
 @api_view(["POST"])
-def event_handler(request):
+def event_handler(request) -> Response:
     # Extract the incoming data
     data = request.data
 
@@ -36,18 +36,37 @@ def event_handler(request):
             client_msg_id = event.get("client_msg_id")
 
             # Check for required message fields
-            if not client_msg_id:
+            if not text:
                 return Response(
-                    {"detail": "'client_msg_id' is required in the message."},
+                    {"detail": "'text' is required in the message."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Process the message with dlp handler
-            dlp(text, client_msg_id)
-            return Response({"detail": "Message processed."}, status=status.HTTP_200_OK)
+            message_created = handler.save_message(text, client_msg_id)
+            if message_created:
+                return handler.add_event_to_redis(data)
+            return Response(
+                {"detail": "Message already exists."},
+                status=status.HTTP_200_OK,
+            )
 
+    elif data_type == "url_verification":
+        return Response(data, status=status.HTTP_200_OK)
     # Return a bad request if 'type' is not 'event_callback'
     return Response(
         {"detail": "'type' must be 'event_callback'."},
         status=status.HTTP_400_BAD_REQUEST,
     )
+
+
+@api_view(["GET"])
+def get_patterns(request) -> Response:
+    # Get patterns from the handler
+    return handler.get_patterns()
+
+
+@api_view(["POST"])
+def update_leaked_message(request) -> Response:
+    # Extract the incoming data
+    data = request.data
+    return handler.update_leaked_message(data)
