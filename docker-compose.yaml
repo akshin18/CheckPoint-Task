@@ -3,11 +3,8 @@ version: '3.8'
 services:
   db:
     image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: admin  # Change this to a strong password
-      MYSQL_DATABASE: admin  # Replace with your database name
-      MYSQL_USER: admin  # Replace with your database username
-      MYSQL_PASSWORD: admin  # Replace with your database user password
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     networks:
@@ -15,16 +12,31 @@ services:
 
   web:
     build: ./project
-    command: poetry run python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     depends_on:
       - db
     networks:
       - mynetwork
+    entrypoint: [ "./entrypoint.sh" ]
+    command: gunicorn --bind 0.0.0.0:8000 project.wsgi:application
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+    networks:
+      - mynetwork
+
 
 networks:
   mynetwork:
-    external: true  # Use the previously created network
+
+volumes:
+  static_volume:

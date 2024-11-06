@@ -1,20 +1,27 @@
-FROM python:3.12
+FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE 1  # Prevents Python from writing .pyc files
+ENV PYTHONUNBUFFERED 1         # Ensures stdout and stderr are sent to Docker logs
 
-WORKDIR /opt/api
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    pkg-config \
+    default-libmysqlclient-dev \
+    netcat-openbsd \
+    && apt-get clean
 
 RUN pip install --upgrade pip && pip install poetry
 
 COPY ./pyproject.toml ./
 COPY ./poetry.lock ./
 
-RUN poetry config virtualenvs.create false && poetry install --timeout 120
+RUN poetry config virtualenvs.create false && poetry install
 
 COPY . ./
 
 EXPOSE 8000
 
-CMD uvicorn api.app:app --host 0.0.0.0 --port 8000 --proxy-headers
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD gunicorn --bind 0.0.0.0:8000 project.wsgi:application
