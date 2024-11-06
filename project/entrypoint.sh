@@ -10,9 +10,7 @@ done
 python manage.py collectstatic --noinput
 
 # Run migrations
-python manage.py makemigrations
 python manage.py migrate
-
 
 # Create superuser
 python manage.py create_superuser
