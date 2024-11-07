@@ -1,5 +1,4 @@
 import sys
-import time
 from typing import Optional, Dict, List
 import asyncio
 import json
@@ -60,8 +59,8 @@ class Manager:
                     logger.error(
                         f"Could not get patterns: {response.status_code=} {response.text=}"
                     )
-                    time.sleep(100000)
-                    return []
+                    await asyncio.sleep(5)
+                    return await self._get_patterns(retries + 1)
                 patterns_list = response.json()
                 logger.debug(f"Patterns: {patterns_list}")
                 return patterns_list
@@ -75,10 +74,12 @@ class Manager:
 
     async def main(self) -> None:
         """Main loop to read messages from SQS queue and execute tasks"""
-        if not self.patterns:
-            logger.info("No patterns found -> try to get patterns")
-            self.patterns = await self._get_patterns()
-        while self.patterns:
+        while True:
+            if not self.patterns:
+                logger.info("No patterns found -> try to get patterns")
+                self.patterns = await self._get_patterns()
+                await asyncio.sleep(3)
+                continue
             logger.debug("Starting main loop")
             message = await self._get_message()
             if not message:
